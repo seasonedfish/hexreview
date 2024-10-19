@@ -1,6 +1,11 @@
+// /pages/api/backend/callback.ts
+
 import { NextApiRequest, NextApiResponse } from "next";
 import axios from "axios";
+import { db } from "../../../utils/firebase"; // Import Firestore instance
+import { doc, setDoc, getDoc } from "firebase/firestore"; // Firestore functions
 
+// GitHub OAuth URLs
 const GITHUB_TOKEN_URL = "https://github.com/login/oauth/access_token";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -36,6 +41,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const userData = userResponse.data;
 
       console.log("Authenticated user data:", userData);
+
+      // Now that we have user data, store it in Firestore
+      const userRef = doc(db, "users", userData.id.toString());
+
+      // Check if user exists
+      const userSnapshot = await getDoc(userRef);
+      if (!userSnapshot.exists()) {
+        // if not, new user.
+        await setDoc(userRef, {
+          userId: userData.id,
+          username: userData.login,
+          email: userData.email, // This might be null if the user hasn't made their email public but that's chill.
+          avatarUrl: userData.avatar_url,
+          profileUrl: userData.html_url,
+          createdAt: new Date().toISOString(),
+        });
+      }
 
       // Redirect to the home page (or any other page) after successful authentication
       res.redirect(`http://localhost:3000/home?user=${encodeURIComponent(JSON.stringify(userData))}`);
