@@ -1,12 +1,6 @@
 "use client";
 import React, { useCallback } from "react";
-import {
-  User,
-  File,
-  Clock,
-  Plus,
-  MessageSquare,
-} from "lucide-react";
+import { User, File, Clock, Plus, MessageSquare } from "lucide-react";
 import Header from "@/components/header";
 import { useDropzone } from "react-dropzone";
 
@@ -62,9 +56,9 @@ export default function HomePage() {
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     console.log(acceptedFiles);
-  }, [])
+  }, []);
 
-  const {getRootProps, getInputProps} = useDropzone({onDrop});
+  const { getRootProps, getInputProps } = useDropzone({ onDrop });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -76,7 +70,7 @@ export default function HomePage() {
         <section className="mb-12">
           {/* Drag & Drop Zone */}
           <div
-            {...getRootProps({className: "dropzone"})}
+            {...getRootProps({ className: "dropzone" })}
             className={`
               border-2 border-dashed rounded-2xl p-12
               flex flex-col items-center justify-center
@@ -126,14 +120,6 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
-
-            {/* Add New Project Card */}
-            <button className="backdrop-blur-xl bg-white/[0.02] border border-white/[0.05] rounded-xl p-6 hover:bg-white/[0.05] transition-colors flex flex-col items-center justify-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
-                <Plus size={24} className="text-purple-300" />
-              </div>
-              <span className="text-gray-400">New Project</span>
-            </button>
           </div>
         </section>
 
