@@ -34,6 +34,11 @@ export default function LoginPage() {
     });
   };
 
+  const handleGithubLogin = () => {
+    // Redirect to the backend authentication route
+    window.location.href = "/api/backend/github"; // Update this path to your backend endpoint
+  };
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center p-4">
       {/* Floating Background Hexagons */}
@@ -92,7 +97,9 @@ export default function LoginPage() {
           </div>
 
           {/* GitHub Sign In */}
-          <button className="w-full bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.05] text-white rounded-xl p-3 flex items-center justify-center gap-2 mb-6 transition-colors">
+          <button 
+            onClick={handleGithubLogin} // Add the onClick handler
+            className="w-full bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.05] text-white rounded-xl p-3 flex items-center justify-center gap-2 mb-6 transition-colors">
             <Github size={20} />
             <span>Continue with GitHub</span>
           </button>
