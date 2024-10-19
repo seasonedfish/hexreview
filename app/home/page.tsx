@@ -81,11 +81,6 @@ export default function HomePage() {
               border-2 border-dashed rounded-2xl p-12
               flex flex-col items-center justify-center
               transition-all duration-200
-              ${
-                isDragging
-                  ? "border-purple-500 bg-purple-500/10"
-                  : "border-white/[0.05] hover:border-purple-500/50 bg-white/[0.02]"
-              }
             `}
           >
             <input {...getInputProps()} />
