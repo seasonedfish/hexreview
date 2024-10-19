@@ -1,101 +1,164 @@
-import Image from "next/image";
+"use client";
+import React, { useState, useEffect } from "react";
+import {
+  Code2,
+  MessageSquare,
+  GitBranch,
+  Hexagon,
+  LogIn,
+  UserPlus,
+} from "lucide-react";
+import Link from "next/link";
 
-export default function Home() {
+export default function SplashScreen() {
+  const [showContent, setShowContent] = useState(false);
+
+  useEffect(() => {
+    // Only animate content in, don't auto-dismiss
+    setTimeout(() => setShowContent(true), 500);
+  }, []);
+
+  const handleLogin = () => {
+    // Handle login navigation/modal
+    console.log("Login clicked");
+  };
+
+  const handleSignup = () => {
+    // Handle signup navigation/modal
+    console.log("Signup clicked");
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="fixed inset-0 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+      <div
+        className={`transition-all duration-1000 ${
+          showContent
+            ? "opacity-100 transform translate-y-0"
+            : "opacity-0 transform translate-y-8"
+        }`}
+      >
+        {/* Main Content Container */}
+        <div className="relative">
+          {/* Floating Hexagons Background */}
+          <div className="absolute inset-0 -z-10">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="absolute animate-float"
+                style={{
+                  top: `${Math.random() * 100}%`,
+                  left: `${Math.random() * 100}%`,
+                  animationDelay: `${i * 0.2}s`,
+                  opacity: 0.1,
+                }}
+              >
+                <Hexagon
+                  size={40 + Math.random() * 40}
+                  className="text-purple-500"
+                />
+              </div>
+            ))}
+          </div>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          {/* Logo and Title */}
+          <div className="text-center mb-8">
+            <div className="relative inline-block">
+              <div className="relative z-10 transform-gpu animate-pulse-slow">
+                <Hexagon
+                  size={80}
+                  className="text-purple-500"
+                  fill="rgba(147, 51, 234, 0.1)"
+                />
+              </div>
+              <Code2
+                size={40}
+                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-purple-300"
+              />
+            </div>
+            <h1 className="mt-6 text-4xl font-bold bg-gradient-to-r from-purple-400 via-purple-300 to-purple-400 bg-clip-text text-transparent">
+              HexReview
+            </h1>
+            <p className="mt-3 text-gray-400 text-lg">
+              Code Annotation Reimagined
+            </p>
+          </div>
+
+          {/* Auth Buttons */}
+          <div className="flex justify-center gap-4 mb-8">
+            <Link href="/login">
+              <button
+                onClick={handleLogin}
+                className="group relative px-6 py-2 rounded-lg bg-purple-600 text-white font-medium transition-all hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+              >
+                <span className="flex items-center gap-2">
+                  <LogIn
+                    size={18}
+                    className="transform transition-transform group-hover:-translate-x-0.5"
+                  />
+                  Log In
+                </span>
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-400 to-purple-600 opacity-0 group-hover:opacity-20 transition-opacity" />
+              </button>
+            </Link>
+            <Link href="/register">
+              <button
+                onClick={handleSignup}
+                className="group relative px-6 py-2 rounded-lg bg-transparent text-purple-400 font-medium border border-purple-500/30 transition-all hover:bg-purple-500/10 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+              >
+                <span className="flex items-center gap-2">
+                  <UserPlus
+                    size={18}
+                    className="transform transition-transform group-hover:scale-110"
+                  />
+                  Sign Up
+                </span>
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-400 to-purple-600 opacity-0 group-hover:opacity-10 transition-opacity" />
+              </button>
+            </Link>
+          </div>
+
+          {/* Feature Hexagons */}
+          <div className="grid grid-cols-3 gap-4">
+            <div className="flex flex-col items-center space-y-2 group">
+              <div className="p-3 bg-purple-500/10 rounded-xl transform transition-transform group-hover:scale-110">
+                <Code2 className="text-purple-400" size={24} />
+              </div>
+              <span className="text-sm text-gray-400">Smart Parsing</span>
+            </div>
+            <div className="flex flex-col items-center space-y-2 group">
+              <div className="p-3 bg-purple-500/10 rounded-xl transform transition-transform group-hover:scale-110">
+                <MessageSquare className="text-purple-400" size={24} />
+              </div>
+              <span className="text-sm text-gray-400">Rich Comments</span>
+            </div>
+            <div className="flex flex-col items-center space-y-2 group">
+              <div className="p-3 bg-purple-500/10 rounded-xl transform transition-transform group-hover:scale-110">
+                <GitBranch className="text-purple-400" size={24} />
+              </div>
+              <span className="text-sm text-gray-400">Version Control</span>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+      </div>
+
+      {/* CSS Animations */}
+      <style jsx global>{`
+        @keyframes float {
+          0%,
+          100% {
+            transform: translateY(0px) rotate(0deg);
+          }
+          50% {
+            transform: translateY(-20px) rotate(10deg);
+          }
+        }
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
+        .animate-pulse-slow {
+          animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+      `}</style>
     </div>
   );
 }
