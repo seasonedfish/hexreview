@@ -1,19 +1,16 @@
 "use client";
-import React, { DragEvent, useState } from "react";
+import React, { useCallback } from "react";
 import {
-  Upload,
   User,
   File,
-  FolderOpen,
   Clock,
   Plus,
   MessageSquare,
 } from "lucide-react";
 import Header from "@/components/header";
+import { useDropzone } from "react-dropzone";
 
 export default function HomePage() {
-  const [isDragging, setIsDragging] = useState(false);
-
   // Mock data for projects
   const recentProjects = [
     {
@@ -63,20 +60,11 @@ export default function HomePage() {
     },
   ];
 
-  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    console.log(acceptedFiles);
+  }, [])
 
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    setIsDragging(false);
-    // Handle file drop logic here
-  };
+  const {getRootProps, getInputProps} = useDropzone({onDrop});
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -86,23 +74,9 @@ export default function HomePage() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Upload Section */}
         <section className="mb-12">
-          {/* Upload Button */}
-          <div className="flex gap-4 mb-6">
-            <button className="flex items-center gap-2 bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-xl transition-colors">
-              <Upload size={20} />
-              Upload Files
-            </button>
-            <button className="flex items-center gap-2 bg-white/[0.05] hover:bg-white/[0.08] text-gray-300 px-6 py-3 rounded-xl transition-colors">
-              <FolderOpen size={20} />
-              Browse Projects
-            </button>
-          </div>
-
           {/* Drag & Drop Zone */}
           <div
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
+            {...getRootProps({className: "dropzone"})}
             className={`
               border-2 border-dashed rounded-2xl p-12
               flex flex-col items-center justify-center
@@ -114,6 +88,7 @@ export default function HomePage() {
               }
             `}
           >
+            <input {...getInputProps()} />
             <div className="w-16 h-16 rounded-full bg-purple-500/20 flex items-center justify-center mb-4">
               <Plus size={24} className="text-purple-300" />
             </div>
