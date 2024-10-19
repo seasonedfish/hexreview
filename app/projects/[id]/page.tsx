@@ -1,11 +1,12 @@
+"use client";
+
+import Header from "@/components/header";
 import { File, Folder, Tree } from "@/components/ui/file-tree";
 
 export default function FileTreeDemo() {
   return (
-    <div className="flex flex-col justify-items-stretch min-h-screen">
-      <header>
-        header bar
-      </header>
+    <div className="flex flex-col justify-items-stretch min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <Header></Header>
       <main className="flex-grow flex">
         <div className="relative basis-1/4 flex h-[300px] w-1/2 flex-col items-center justify-center overflow-hidden rounded-lg border bg-background md:shadow-xl">
           <Tree
