@@ -9,7 +9,6 @@ import {
   FolderOpen,
   Clock,
   Plus,
-  Settings,
   Hexagon,
   Code2,
   MessageSquare,
@@ -123,10 +122,6 @@ export default function HomePage() {
               {isProfileOpen && (
                 <div className="absolute right-0 mt-2 w-48 backdrop-blur-xl bg-gray-900/95 border border-white/[0.05] rounded-xl shadow-xl z-50">
                   <div className="p-2">
-                    <button className="w-full flex items-center gap-2 px-4 py-2 text-gray-300 hover:bg-white/[0.05] rounded-lg transition-colors">
-                      <Settings size={16} />
-                      Settings
-                    </button>
                     <button className="w-full flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-white/[0.05] rounded-lg transition-colors">
                       <LogOut size={16} />
                       Logout
@@ -213,14 +208,6 @@ export default function HomePage() {
                 </div>
               </div>
             ))}
-
-            {/* Add New Project Card */}
-            <button className="backdrop-blur-xl bg-white/[0.02] border border-white/[0.05] rounded-xl p-6 hover:bg-white/[0.05] transition-colors flex flex-col items-center justify-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
-                <Plus size={24} className="text-purple-300" />
-              </div>
-              <span className="text-gray-400">New Project</span>
-            </button>
           </div>
         </section>
 
