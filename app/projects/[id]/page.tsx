@@ -2,8 +2,10 @@
 
 import Header from "@/components/header";
 import { File, Folder, Tree } from "@/components/ui/file-tree";
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { okaidia } from "react-syntax-highlighter/dist/esm/styles/prism";
+import BottomCommentsSection from "@/components/ui/BottomCommentsSection";
+import RightCommentsSection from "@/components/ui/RightCommentsSection";
 
 export default function FileTreeDemo() {
   const codeString = `
@@ -77,8 +79,6 @@ export interface TerminalColorScheme {
 
 	name?: string
 }
-  
-
       `;
 
   return (
@@ -135,20 +135,24 @@ export interface TerminalColorScheme {
           </Tree>
         </div>
         <div className="basis-1/2">
-          <SyntaxHighlighter className="w-full h-full !m-0 !bg-black" language="typescript" style={okaidia} showLineNumbers={true}>
+          <SyntaxHighlighter
+            className="w-full h-full !m-0 !bg-black"
+            language="typescript"
+            style={okaidia}
+            showLineNumbers={true}
+          >
             {codeString}
           </SyntaxHighlighter>
         </div>
         <div className="basis-1/4">
-            comment
+          <RightCommentsSection />{" "}
+          {/* Here is where the CommentsSection is rendered */}
         </div>
       </main>
       <div>
-        list of all comments
+        <BottomCommentsSection />{" "}
       </div>
     </div>
-
-
   );
 }
 
