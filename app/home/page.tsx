@@ -6,7 +6,7 @@ import { useDropzone } from "react-dropzone";
 import JSZip from "jszip";
 import { addFileToProject, createProject } from "@/utils/firestoreHelpers";
 import { getAuth } from "firebase/auth";
-
+import Link from "next/link";
 
 export default function HomePage() {
 const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
@@ -204,38 +204,39 @@ Drop your files here
 
 {/* Recent Projects Grid */}
 <section className="mb-12">
-<h2 className="text-2xl font-bold text-white mb-6">
-Recent Projects
-</h2>
-<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-{recentProjects.map((project) => (
-<div
-key={project.id}
-className="backdrop-blur-xl bg-white/[0.05] border border-white/[0.05] rounded-xl p-6 hover:bg-white/[0.08] transition-colors"
->
-<div className="flex items-start justify-between mb-4">
-<div>
-<h3 className="text-lg font-medium text-white mb-1">
-{project.name}
-</h3>
-<span className="text-sm text-gray-400">
-{project.language}
-</span>
-</div>
-<span className="text-sm text-gray-400">
-{project.lastEdited}
-</span>
-</div>
-<div className="flex items-center gap-2 text-gray-400">
-<MessageSquare size={16} />
-<span className="text-sm">
-{project.annotations} annotations
-</span>
-</div>
-</div>
-))}
-</div>
-</section>
+          <h2 className="text-2xl font-bold text-white mb-6">
+            Recent Projects
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {recentProjects.map((project) => (
+              <Link href={`/projects/${project.id}`} key={project.id}>
+                <div
+                  className="backdrop-blur-xl bg-white/[0.05] border border-white/[0.05] rounded-xl p-6 hover:bg-white/[0.08] transition-colors"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-medium text-white mb-1">
+                        {project.name}
+                      </h3>
+                      <span className="text-sm text-gray-400">
+                        {project.language}
+                      </span>
+                    </div>
+                    <span className="text-sm text-gray-400">
+                      {project.lastEdited}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <MessageSquare size={16} />
+                    <span className="text-sm">
+                      {project.annotations} annotations
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
 
 
 {/* Past Annotations */}
