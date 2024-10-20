@@ -3,18 +3,91 @@
 import Header from "@/components/header";
 import { File, Folder, Tree } from "@/components/ui/file-tree";
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { irBlack } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import { okaidia } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 export default function FileTreeDemo() {
-  const codeString = '(num) => num + 1';
+  const codeString = `
+import toml from "toml";
+import { RgbColor, fromHex, toHex } from "./rgbcolor";
+
+export interface Ansi {
+	black: RgbColor;
+	red: RgbColor;
+	green: RgbColor;
+	yellow: RgbColor;
+	blue: RgbColor;
+	magenta: RgbColor;
+	cyan: RgbColor;
+	white: RgbColor;
+
+	brightBlack: RgbColor;
+	brightRed: RgbColor;
+	brightGreen: RgbColor;
+	brightYellow: RgbColor;
+	brightBlue: RgbColor;
+	brightMagenta: RgbColor;
+	brightCyan: RgbColor;
+	brightWhite: RgbColor;
+}
+
+export function normalColors(ansi: Ansi): Array<RgbColor> {
+	return [
+		ansi.black,
+		ansi.red,
+		ansi.green,
+		ansi.yellow,
+		ansi.blue,
+		ansi.magenta,
+		ansi.cyan,
+		ansi.white,
+	]
+}
+
+export function brightColors(ansi: Ansi): Array<RgbColor> {
+	return [
+		ansi.brightBlack,
+		ansi.brightRed,
+		ansi.brightGreen,
+		ansi.brightYellow,
+		ansi.brightBlue,
+		ansi.brightMagenta,
+		ansi.brightCyan,
+		ansi.brightWhite,
+	]
+}
+
+export function allColors(ansi: Ansi): Array<RgbColor> {
+	return [...normalColors(ansi), ...brightColors(ansi)]
+}
+
+/**
+ * Represents a color scheme for terminal emulators.
+ */
+export interface TerminalColorScheme {
+	background: RgbColor
+	foreground: RgbColor
+	ansi: Ansi
+
+	cursorBackground?: RgbColor
+	cursorBorder?: RgbColor
+	cursorForeground?: RgbColor
+
+	selectionBackground?: RgbColor
+	selectionForeground?: RgbColor
+
+	name?: string
+}
+  
+
+      `;
 
   return (
     <div className="flex flex-col justify-items-stretch min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <Header></Header>
       <main className="flex-grow flex">
-        <div className="relative basis-1/4 flex h-[300px] w-1/2 flex-col items-center justify-center overflow-hidden rounded-lg border bg-background md:shadow-xl">
+        <div className="relative basis-1/4 h-full flex w-1/2 flex-col items-center justify-center overflow-hidden rounded-lg border bg-background md:shadow-xl">
           <Tree
-            className="p-2 overflow-hidden rounded-md bg-background"
+            className="p-2 overflow-hidden rounded-md bg-background h-full"
             initialSelectedId="7"
             initialExpandedItems={[
               "1",
@@ -62,7 +135,7 @@ export default function FileTreeDemo() {
           </Tree>
         </div>
         <div className="basis-1/2">
-          <SyntaxHighlighter className="w-full h-full !m-0" language="javascript" style={irBlack} showLineNumbers={true}>
+          <SyntaxHighlighter className="w-full h-full !m-0 !bg-black" language="typescript" style={okaidia} showLineNumbers={true}>
             {codeString}
           </SyntaxHighlighter>
         </div>
