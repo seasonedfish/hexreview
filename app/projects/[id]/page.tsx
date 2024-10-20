@@ -9,6 +9,7 @@ import BottomCommentsSection from "@/components/ui/BottomCommentsSection";
 import RightCommentsSection from "@/components/ui/RightCommentsSection";
 import { useEffect, useRef, useState } from "react";
 import { getLineNumbers, isInCode } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
 
 export default function FileTreeDemo() {
   const codeString = `
@@ -180,24 +181,27 @@ export function normalColors(ansi: Ansi): Array<RgbColor> {
           </SyntaxHighlighter>
           {
             showMenu && (
-              <div
+              <Card
                 style={{
                   position: 'absolute', 
                   top: `${menuPosition.top}px`, 
                   left: `${menuPosition.left}px`, 
-                  background: 'white', 
-                  border: '1px solid #ccc', 
-                  padding: '10px'
                 }}
+                className="bg-gray-900 border-gray-700"
                 ref={menuRef}
               >
-                <textarea 
-                  placeholder="Enter your comment" 
-                  rows={3}
-                  style={{ width: '200px' }}
-                ></textarea>
-                <button onClick={() => handleCommentSubmit("User's comment here")}>Submit</button>
-              </div>
+                <div className="m-2">
+                  <textarea 
+                    placeholder="Enter your comment" 
+                    rows={3}
+                    style={{ width: '200px' }}
+                    className="rounded-md p-2 bg-gray-950"
+                  ></textarea>
+                  <div className="mt-2">
+                    <button className="bg-gray-950 p-2 rounded-sm" onClick={() => handleCommentSubmit("User's comment here")}>Submit</button>
+                  </div>
+                </div>
+              </Card>
             )
           }
         </div>
