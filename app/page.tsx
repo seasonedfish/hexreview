@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, ReactNode } from "react";
 import { Code2, MessageSquare, GitBranch, Hexagon, Github } from "lucide-react";
+import GitHubAuthButton from "@/components/ui/GitHubAuthButton";
 
 interface CodeSnippetProps {
   children: ReactNode;
@@ -186,13 +187,7 @@ export default function SplashScreen() {
             }`}
           >
             {/* GitHub Sign In */}
-            <button
-              onClick={handleGithubLogin}
-              className="w-full bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.05] text-white rounded-xl p-4 flex items-center justify-center gap-3 transition-colors"
-            >
-              <Github size={24} />
-              <span className="text-lg">Continue with GitHub</span>
-            </button>
+            <GitHubAuthButton />
           </div>
 
           {/* Feature Hexagons */}
