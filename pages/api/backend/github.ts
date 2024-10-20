@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 // GitHub OAuth URLs
 const GITHUB_AUTH_URL = "https://github.com/login/oauth/authorize";
-const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID;
+const GITHUB_CLIENT_ID = process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID;
 const GITHUB_REDIRECT_URI = `https://hexreviewhackwashu.firebaseapp.com/__/auth/handler`; // Ensure this matches your callback URL
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
