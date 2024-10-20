@@ -6,6 +6,8 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { okaidia } from "react-syntax-highlighter/dist/esm/styles/prism";
 import BottomCommentsSection from "@/components/ui/BottomCommentsSection";
 import RightCommentsSection from "@/components/ui/RightCommentsSection";
+import { useEffect, useState } from "react";
+import { getLineNumbers } from "@/lib/utils";
 
 export default function FileTreeDemo() {
   const codeString = `
@@ -21,65 +23,32 @@ export interface Ansi {
 	magenta: RgbColor;
 	cyan: RgbColor;
 	white: RgbColor;
-
-	brightBlack: RgbColor;
-	brightRed: RgbColor;
-	brightGreen: RgbColor;
-	brightYellow: RgbColor;
-	brightBlue: RgbColor;
-	brightMagenta: RgbColor;
-	brightCyan: RgbColor;
-	brightWhite: RgbColor;
-}
-
-export function normalColors(ansi: Ansi): Array<RgbColor> {
-	return [
-		ansi.black,
-		ansi.red,
-		ansi.green,
-		ansi.yellow,
-		ansi.blue,
-		ansi.magenta,
-		ansi.cyan,
-		ansi.white,
-	]
-}
-
-export function brightColors(ansi: Ansi): Array<RgbColor> {
-	return [
-		ansi.brightBlack,
-		ansi.brightRed,
-		ansi.brightGreen,
-		ansi.brightYellow,
-		ansi.brightBlue,
-		ansi.brightMagenta,
-		ansi.brightCyan,
-		ansi.brightWhite,
-	]
-}
-
-export function allColors(ansi: Ansi): Array<RgbColor> {
-	return [...normalColors(ansi), ...brightColors(ansi)]
-}
-
-/**
- * Represents a color scheme for terminal emulators.
- */
-export interface TerminalColorScheme {
-	background: RgbColor
-	foreground: RgbColor
-	ansi: Ansi
-
-	cursorBackground?: RgbColor
-	cursorBorder?: RgbColor
-	cursorForeground?: RgbColor
-
-	selectionBackground?: RgbColor
-	selectionForeground?: RgbColor
-
-	name?: string
 }
       `;
+
+  const [selection, setSelection] = useState({ begin: 0, end: 0 });
+  const handleSelection = () => {
+    const selection = window.getSelection();
+    if (selection == null || selection.rangeCount === 0) return;
+
+    const result = getLineNumbers(selection);
+    if (!result) return;
+    console.log(result.begin, result.end);
+    setSelection({begin: result.begin, end: result.end});
+  };
+
+  useEffect(() => {
+
+    // Add event listeners
+    document.addEventListener('selectionchange', handleSelection);
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('selectionchange', handleSelection);
+    };
+  }, []);
+
+
 
   return (
     <div className="flex flex-col justify-items-stretch h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
@@ -140,6 +109,7 @@ export interface TerminalColorScheme {
             language="typescript"
             style={okaidia}
             showLineNumbers={true}
+            id="main-code"
           >
             {codeString}
           </SyntaxHighlighter>

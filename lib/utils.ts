@@ -34,3 +34,69 @@ export function getLanguageFromFilename(filename: string): string {
   const extension = filename.slice(filename.lastIndexOf('.'));
   return languageMap[extension] || 'plain'; // Return 'plain' if the extension is not recognized
 }
+
+export function getTopLevelSpan(range: Range) {
+  if (range.startContainer.parentElement?.matches("code")) {
+    return range.startContainer;
+  }
+  let element = range.startContainer.parentElement;
+  while (true) {
+    if (element?.parentElement?.matches("code")) {
+      return element;
+    }
+    element = element?.parentElement ?? null;
+  }
+}
+
+export const getLineNumbers = function (selection: Selection): {begin: number, end: number} | undefined {
+  const mainCode = document.getElementById("main-code");
+  if (!mainCode?.matches(":hover")) {
+    return undefined;
+  }
+
+  const beginElement = getTopLevelSpan(selection.getRangeAt(0));
+  const code = beginElement.parentElement;
+  if (!code) {
+    console.warn("Could not get code parent element");
+    return undefined;
+  }
+
+  let lineNumber = 1;
+  let i = 0;
+  for (; i < code.children.length; i++) {
+    const currentChild = code.children[i];
+
+    if (currentChild === beginElement) {
+      break;
+    }
+    if (currentChild.matches(".linenumber")) {
+      if (!currentChild.textContent) {
+        return undefined;
+      }
+      lineNumber = Number.parseInt(currentChild.textContent)
+    }
+  }
+  const begin = lineNumber;
+
+  const endElement = getTopLevelSpan(selection.getRangeAt(selection.rangeCount - 1));
+  if (!endElement) {
+    console.warn("Could not get end element");
+    return undefined;
+  }
+  for (; i < code.children.length; i++) {
+    const currentChild = code.children[i];
+
+    if (currentChild === endElement) {
+      break;
+    }
+    if (currentChild.matches(".linenumber")) {
+      if (!currentChild.textContent) {
+        return undefined;
+      }
+      lineNumber = Number.parseInt(currentChild.textContent)
+    }
+  }
+  const end = lineNumber;
+
+  return {begin: begin, end: end};
+}
