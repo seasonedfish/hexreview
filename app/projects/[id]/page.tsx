@@ -79,7 +79,7 @@ export function normalColors(ansi: Ansi): Array<RgbColor> {
       const rect = range.getBoundingClientRect();
     
       // Set the position of the floating menu
-      setMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX + 300});
+      setMenuPosition({ top: rect.top, left: rect.left + 300});
     
       setShowMenu(true);
     };
