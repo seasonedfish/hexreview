@@ -1,13 +1,6 @@
 "use client";
 import React, { useState, useEffect, ReactNode } from "react";
-import {
-  Code2,
-  MessageSquare,
-  GitBranch,
-  Hexagon,
-  LogIn,
-  UserPlus,
-} from "lucide-react";
+import { Code2, MessageSquare, GitBranch, Hexagon, Github } from "lucide-react";
 import Link from "next/link";
 
 interface CodeSnippetProps {
@@ -69,7 +62,9 @@ const codeSnippets = [
 export default function SplashScreen() {
   const [isLoaded, setIsLoaded] = useState(false);
   const positions = calculatePositions(codeSnippets.length);
-
+  const handleGithubLogin = () => {
+    window.location.href = "/api/backend/github";
+  };
   useEffect(() => {
     const timer = setTimeout(() => setIsLoaded(true), 100);
     return () => clearTimeout(timer);
@@ -191,30 +186,14 @@ export default function SplashScreen() {
               isLoaded ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}
           >
-            <Link href="/login">
-              <button className="group relative px-6 py-2 rounded-lg bg-purple-600 text-white font-medium transition-all hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 shadow-md hover:shadow-lg">
-                <span className="flex items-center gap-2">
-                  <LogIn
-                    size={18}
-                    className="transform transition-transform group-hover:-translate-x-0.5"
-                  />
-                  Log In
-                </span>
-                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-400 to-purple-600 opacity-0 group-hover:opacity-20 transition-opacity" />
-              </button>
-            </Link>
-            <Link href="/register">
-              <button className="group relative px-6 py-2 rounded-lg bg-transparent text-purple-400 font-medium border border-purple-500/30 transition-all hover:bg-purple-500/10 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-gray-900 shadow-md hover:shadow-lg">
-                <span className="flex items-center gap-2">
-                  <UserPlus
-                    size={18}
-                    className="transform transition-transform group-hover:scale-110"
-                  />
-                  Sign Up
-                </span>
-                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-400 to-purple-600 opacity-0 group-hover:opacity-10 transition-opacity" />
-              </button>
-            </Link>
+            {/* GitHub Sign In */}
+            <button
+              onClick={handleGithubLogin}
+              className="w-full bg-white/[0.05] hover:bg-white/[0.08] border border-white/[0.05] text-white rounded-xl p-4 flex items-center justify-center gap-3 transition-colors"
+            >
+              <Github size={24} />
+              <span className="text-lg">Continue with GitHub</span>
+            </button>
           </div>
 
           {/* Feature Hexagons */}
