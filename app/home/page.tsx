@@ -4,6 +4,12 @@ import { User, File, Clock, Plus, MessageSquare } from "lucide-react";
 import Header from "@/components/header";
 import { useDropzone } from "react-dropzone";
 import JSZip from "jszip";
+import {
+  addFileToDirectory,
+  createProject,
+  processZipFileStructure,
+} from "@/utils/firestoreHelpers";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { addFileToProject, createProject } from "@/utils/firestoreHelpers";
 import { getAuth } from "firebase/auth";
 import { getFirestore, collection, query, getDocs } from "firebase/firestore"; // Firestore imports
@@ -84,6 +90,7 @@ export default function HomePage() {
     try {
       const zip = new JSZip();
       const zipContent = await zip.loadAsync(file);
+
       const extractedFiles: Blob[] = [];
       // Create a new project under the authenticated user's collection
       const projectRef = await createProject(
