@@ -57,6 +57,7 @@ export default function GitHubAuthButton() {
 
       console.log("Authentication complete!");
       // You might want to redirect or update UI state here
+      window.location.href = "/home";
     } catch (error: any) {
       console.error("Detailed error:", {
         code: error.code,
