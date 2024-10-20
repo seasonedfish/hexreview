@@ -64,26 +64,6 @@ export function BottomCommentsSection() {
   return (
     <div className="overflow-y-auto" style={{ maxHeight: "200px" }}>
       <Table className="min-w-full">
-        <TableCaption>A list of recent code comments.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="text-white border border-white">
-              Author
-            </TableHead>
-            <TableHead className="text-white border border-white">
-              File
-            </TableHead>
-            <TableHead className="text-white border border-white">
-              Line
-            </TableHead>
-            <TableHead className="text-white border border-white">
-              Comment
-            </TableHead>
-            <TableHead className="text-right text-white border border-white">
-              Timestamp
-            </TableHead>
-          </TableRow>
-        </TableHeader>
         <TableBody>
           {comments.map((comment) => (
             <TableRow key={comment.id}>
