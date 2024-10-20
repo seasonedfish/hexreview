@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import dynamic from "next/dynamic";
 // https://github.com/pacocoursey/next-themes/issues/152#issuecomment-1833398041
-const ThemeProvider = dynamic(() => import("@/components/ui/theme-provider"), {ssr: false});
+const ThemeProvider = dynamic(() => import("@/components/ui/theme-provider"), {ssr: true});
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
