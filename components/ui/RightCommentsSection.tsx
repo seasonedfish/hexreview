@@ -59,7 +59,7 @@ const RightCommentsSection = () => {
   return (
     <div className="w-full bg-gray-900 p-4">
       <h2 className="text-xl font-bold mb-4 text-white">Comments</h2>
-      <div className="overflow-y-auto" style={{ maxHeight: "613px" }}>
+      <div className="overflow-y-auto" style={{ maxHeight: "615px" }}>
         <div className="space-y-4">
           {comments.map((comment) => (
             <Card key={comment.id} className="bg-gray-800 border-gray-700">

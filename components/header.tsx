@@ -52,17 +52,17 @@ export default function Header() {
                         </Link>
                     </div>
 
-                    {/* Profile Menu */}
-                    <div className="relative">
-                        <button
-                            onClick={() => setIsProfileOpen(!isProfileOpen)}
-                            className="flex items-center gap-2 bg-white/[0.05] hover:bg-white/[0.08] px-4 py-2 rounded-xl transition-colors"
-                        >
-                            <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-                                <User size={16} className="text-purple-300" />
-                            </div>
-                            <ChevronDown size={16} className="text-gray-400" />
-                        </button>
+          {/* Profile Menu */}
+          <div className="relative">
+            <button
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+              className="flex items-center gap-2 bg-white/[0.05] hover:bg-white/[0.08] px-4 py-2 rounded-xl transition-colors"
+            >
+              <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                <User size={16} className="text-purple-300" />
+              </div>
+              <ChevronDown size={16} className="text-gray-400" />
+            </button>
 
                         {/* Dropdown Menu */}
                         {isProfileOpen && (

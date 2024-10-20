@@ -1,14 +1,18 @@
 // utils/firebase.ts
 import { initializeApp } from "firebase/app";
-import { getAuth } from "firebase/auth";
+import { getAuth, GithubAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getFunctions } from "firebase/functions";
 import { getStorage } from "firebase/storage";
 
 //Firebase config
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  apiKey: "AIzaSyDlBtmOQg-sU1oxdgIYqY7GRgKSlAfLQ18",
+  authDomain: "hexreviewhackwashu.firebaseapp.com",
+  projectId: "hexreviewhackwashu",
+  storageBucket: "hexreviewhackwashu.appspot.com",
+  messagingSenderId: "8594820300",
+  appId: "1:8594820300:web:3d2983f9e363846ca94669",
 };
 
 // Initialize
@@ -18,3 +22,7 @@ export const functions = getFunctions(app);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
+
+// Add GitHub provider configuration
+export const githubProvider = new GithubAuthProvider();
+githubProvider.addScope("user:email");
