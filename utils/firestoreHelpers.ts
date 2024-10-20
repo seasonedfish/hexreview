@@ -1,6 +1,5 @@
-// /utils/firestoreHelpers.ts
-import JSZip from 'jszip';
-import { db } from './firebase';
+import JSZip from "jszip";
+import { db } from "./firebase";
 import {
   collection,
   addDoc,
@@ -14,42 +13,84 @@ import {
   collectionGroup,
   where,
   orderBy,
+  limit,
 } from "firebase/firestore";
 
-
+// Enhanced interfaces
 interface Directory {
-    id: string;
-    directoryName: string;
-    parentDirectoryId: string | null;
-    createdAt: Timestamp;
-    files: FileMetadata[];
-    subdirectories: Directory[];
-  }
+  id: string;
+  directoryName: string;
+  parentDirectoryId: string | null;
+  createdAt: Timestamp;
+  files: FileMetadata[];
+  subdirectories: Directory[];
+}
 
-// New project (created when zip file is uploaded)
-export const createProject = async (userId: string, projectName: string) => {
-  try {
-    const projectRef = await addDoc(collection(db, `users/${userId}/projects`), {
-      projectName,
-      createdAt: Timestamp.now(),
-      sharedWith: [],
-    });
-    return projectRef; // Return the reference to the newly created project
-  } catch (error) {
-    console.error('Error creating project:', error);
-    throw error;
-  }
-};
-
-// Define FileMetadata interface
 export interface FileMetadata {
   fileName: string;
   fileType: string;
   fileSize: number;
   createdAt: Date;
-  content: string; // or Blob, depending on how you're storing content
+  content: string;
 }
 
+export interface ProjectMetadata {
+  projectName: string;
+  createdAt: Timestamp;
+  language: string;
+  annotationsCount: number;
+  sharedWith: string[];
+}
+
+// Updated createProject function
+export const createProject = async (
+  userId: string,
+  projectData: {
+    name: string;
+    language: string;
+  }
+) => {
+  try {
+    const projectRef = await addDoc(
+      collection(db, `users/${userId}/projects`),
+      {
+        projectName: projectData.name,
+        createdAt: Timestamp.now(),
+        language: projectData.language,
+        annotationsCount: 0,
+        sharedWith: [],
+      }
+    );
+    return projectRef;
+  } catch (error) {
+    console.error("Error creating project:", error);
+    throw error;
+  }
+};
+
+// New function to get recent projects
+export const getRecentProjects = async (
+  userId: string,
+  numberOfProjects: number = 6
+) => {
+  try {
+    const projectsRef = collection(db, `users/${userId}/projects`);
+    const q = query(
+      projectsRef,
+      orderBy("createdAt", "desc"),
+      limit(numberOfProjects)
+    );
+
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+  } catch (error) {
+    console.error("Error fetching recent projects:", error);
+    throw error;
+  }
+};
 
 export const processZipFileStructure = async (
   userId: string,
@@ -61,7 +102,12 @@ export const processZipFileStructure = async (
     parentDirectoryId: string | null = null
   ) => {
     const directoryName = dir.name.replace(/\/$/, ""); // Remove trailing slash if any
-    const directoryRef = await createDirectoryInProject(userId, projectId, directoryName, parentDirectoryId);
+    const directoryRef = await createDirectoryInProject(
+      userId,
+      projectId,
+      directoryName,
+      parentDirectoryId
+    );
     const directoryId = directoryRef.id; // The ID of the newly created directory
 
     const dirFiles = Object.values(zipContent.files).filter(
@@ -103,14 +149,17 @@ export const createDirectoryInProject = async (
   parentDirectoryId: string | null = null
 ) => {
   try {
-    const directoryRef = await addDoc(collection(db, `users/${userId}/projects/${projectId}/directories`), {
-      directoryName,
-      parentDirectoryId, // If it's a subdirectory, link to its parent
-      createdAt: Timestamp.now(),
-    });
+    const directoryRef = await addDoc(
+      collection(db, `users/${userId}/projects/${projectId}/directories`),
+      {
+        directoryName,
+        parentDirectoryId, // If it's a subdirectory, link to its parent
+        createdAt: Timestamp.now(),
+      }
+    );
     return directoryRef; // Return the reference to the newly created directory
   } catch (error) {
-    console.error('Error creating directory:', error);
+    console.error("Error creating directory:", error);
     throw error;
   }
 };
@@ -123,24 +172,35 @@ export const addFileToDirectory = async (
   fileMetadata: FileMetadata
 ) => {
   try {
-    await addDoc(collection(db, `users/${userId}/projects/${projectId}/directories/${directoryId}/files`), {
-      fileName: fileMetadata.fileName,
-      fileType: fileMetadata.fileType,
-      fileSize: fileMetadata.fileSize,
-      createdAt: fileMetadata.createdAt,
-      content: fileMetadata.content, // Store file content
-    });
+    await addDoc(
+      collection(
+        db,
+        `users/${userId}/projects/${projectId}/directories/${directoryId}/files`
+      ),
+      {
+        fileName: fileMetadata.fileName,
+        fileType: fileMetadata.fileType,
+        fileSize: fileMetadata.fileSize,
+        createdAt: fileMetadata.createdAt,
+        content: fileMetadata.content, // Store file content
+      }
+    );
   } catch (error) {
-    console.error('Error adding file to directory:', error);
+    console.error("Error adding file to directory:", error);
     throw error;
   }
 };
 
 // Function to retrieve a project's directory hierarchy
-export const getProjectHierarchy = async (userId: string, projectId: string): Promise<Directory[]> => {
+export const getProjectHierarchy = async (
+  userId: string,
+  projectId: string
+): Promise<Directory[]> => {
   try {
     // Get all directories in the project
-    const directoriesSnapshot = await getDocs(collection(db, `users/${userId}/projects/${projectId}/directories`));
+    const directoriesSnapshot = await getDocs(
+      collection(db, `users/${userId}/projects/${projectId}/directories`)
+    );
 
     // Build the directory structure
     const directories: Record<string, Directory> = {};
@@ -159,7 +219,12 @@ export const getProjectHierarchy = async (userId: string, projectId: string): Pr
 
     // Get all files and associate them with directories
     for (const directoryId in directories) {
-      const filesSnapshot = await getDocs(collection(db, `users/${userId}/projects/${projectId}/directories/${directoryId}/files`));
+      const filesSnapshot = await getDocs(
+        collection(
+          db,
+          `users/${userId}/projects/${projectId}/directories/${directoryId}/files`
+        )
+      );
       filesSnapshot.forEach((fileDoc) => {
         const fileData = fileDoc.data();
         directories[directoryId].files.push({
@@ -177,7 +242,9 @@ export const getProjectHierarchy = async (userId: string, projectId: string): Pr
     for (const directoryId in directories) {
       const directory = directories[directoryId];
       if (directory.parentDirectoryId) {
-        directories[directory.parentDirectoryId]?.subdirectories.push(directory);
+        directories[directory.parentDirectoryId]?.subdirectories.push(
+          directory
+        );
       } else {
         rootDirectories.push(directory); // Root-level directories
       }
@@ -185,7 +252,7 @@ export const getProjectHierarchy = async (userId: string, projectId: string): Pr
 
     return rootDirectories; // Return the root-level directories with the full hierarchy
   } catch (error) {
-    console.error('Error retrieving project hierarchy:', error);
+    console.error("Error retrieving project hierarchy:", error);
     throw error;
   }
 };
@@ -203,7 +270,7 @@ export const shareProjectWithUser = async (
       sharedWith: arrayUnion(sharedUserId),
     });
   } catch (error) {
-    console.error('Error sharing project with user:', error);
+    console.error("Error sharing project with user:", error);
     throw error;
   }
 };
@@ -212,18 +279,18 @@ export const shareProjectWithUser = async (
 export const getSharedProjectsForUser = async (userId: string) => {
   try {
     // collection group searches all users' projects subcollections
-    const projectsRef = collectionGroup(db, 'projects');
-    const q = query(projectsRef, where('sharedWith', 'array-contains', userId));
+    const projectsRef = collectionGroup(db, "projects");
+    const q = query(projectsRef, where("sharedWith", "array-contains", userId));
     const querySnapshot = await getDocs(q);
-    const sharedProjects = querySnapshot.docs.map(docSnapshot => ({
+    const sharedProjects = querySnapshot.docs.map((docSnapshot) => ({
       id: docSnapshot.id,
-      userId: docSnapshot.ref.parent.parent?.id || '', // Get the owner's userId
+      userId: docSnapshot.ref.parent.parent?.id || "", // Get the owner's userId
       ...docSnapshot.data(),
     }));
 
     return sharedProjects;
   } catch (error) {
-    console.error('Error getting shared projects:', error);
+    console.error("Error getting shared projects:", error);
     throw error;
   }
 };
@@ -235,24 +302,33 @@ export const addSharedFilesToUser = async (
   sharedUserId: string
 ) => {
   try {
-    const filesRef = collection(db, `users/${originalUserId}/projects/${projectId}/files`);
+    const filesRef = collection(
+      db,
+      `users/${originalUserId}/projects/${projectId}/files`
+    );
     const querySnapshot = await getDocs(filesRef);
 
     // Create a reference for each file under the shared user's projects
     for (const fileDoc of querySnapshot.docs) {
       const fileData = fileDoc.data();
 
-      await addDoc(collection(db, `users/${sharedUserId}/sharedProjects/${projectId}/files`), {
-        ...fileData, // Copy the original file data
-        originalOwnerId: originalUserId, // Keep track of the original owner
-        projectId: projectId,
-        sharedAt: Timestamp.now(), // Timestamp for when the file was shared
-      });
+      await addDoc(
+        collection(
+          db,
+          `users/${sharedUserId}/sharedProjects/${projectId}/files`
+        ),
+        {
+          ...fileData, // Copy the original file data
+          originalOwnerId: originalUserId, // Keep track of the original owner
+          projectId: projectId,
+          sharedAt: Timestamp.now(), // Timestamp for when the file was shared
+        }
+      );
     }
 
     console.log(`Successfully added shared files to user ${sharedUserId}`);
   } catch (error) {
-    console.error('Error adding shared files to user:', error);
+    console.error("Error adding shared files to user:", error);
     throw error;
   }
 };
