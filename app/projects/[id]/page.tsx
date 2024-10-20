@@ -2,8 +2,12 @@
 
 import Header from "@/components/header";
 import { File, Folder, Tree } from "@/components/ui/file-tree";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { irBlack } from "react-syntax-highlighter/dist/esm/styles/hljs";
 
 export default function FileTreeDemo() {
+  const codeString = '(num) => num + 1';
+
   return (
     <div className="flex flex-col justify-items-stretch min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <Header></Header>
@@ -58,7 +62,9 @@ export default function FileTreeDemo() {
           </Tree>
         </div>
         <div className="basis-1/2">
-            source code
+          <SyntaxHighlighter className="w-full h-full !m-0" language="javascript" style={irBlack} showLineNumbers={true}>
+            {codeString}
+          </SyntaxHighlighter>
         </div>
         <div className="basis-1/4">
             comment
