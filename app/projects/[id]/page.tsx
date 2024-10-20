@@ -82,9 +82,9 @@ export interface TerminalColorScheme {
       `;
 
   return (
-    <div className="flex flex-col justify-items-stretch min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+    <div className="flex flex-col justify-items-stretch h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <Header></Header>
-      <main className="flex-grow flex">
+      <main className="flex-grow overflow-y-auto flex">
         <div className="relative basis-1/4 h-full flex w-1/2 flex-col items-center justify-center overflow-hidden rounded-lg border bg-background md:shadow-xl">
           <Tree
             className="p-2 overflow-hidden rounded-md bg-background h-full"
