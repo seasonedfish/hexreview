@@ -1,29 +1,30 @@
 "use client"; // Ensures the component is client-side
 import { ChevronDown, Code2, Hexagon, LogOut, Settings, User } from "lucide-react";
-import { useState } from "react"; // Only keep necessary imports
-import { useRouter } from "next/navigation"; // Ensure useRouter is still imported
+import { useState } from "react"; 
+import { useRouter } from "next/navigation"; 
+import Link from 'next/link'; // Changed to use next/link
 
 export default function Header() {
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const router = useRouter();
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const router = useRouter();
 
-  const handleLogout = async () => {
-    try {
-      // Call the backend API to logout
-      const response = await fetch('/api/logout', {
-        method: 'POST',
-      });
+    const handleLogout = async () => {
+        console.log('Logging out...'); // Debug log
+        try {
+            const response = await fetch('/api/logout', {
+                method: 'POST',
+            });
 
-      if (response.ok) {
-        // Redirect to the login page on successful logout
-        router.push('/');
-      } else {
-        console.error('Logout failed');
-      }
-    } catch (error) {
-      console.error('An error occurred during logout', error);
-    }
-  };
+            if (response.ok) {
+                console.log('Logout successful, redirecting...'); // Debug log
+                router.push('/');
+            } else {
+                console.error('Logout failed');
+            }
+        } catch (error) {
+            console.error('An error occurred during logout', error);
+        }
+    };
 
     return (
         <header className="border-b border-white/[0.05] backdrop-blur-xl bg-gray-900/50">
@@ -31,20 +32,24 @@ export default function Header() {
                 <div className="flex items-center justify-between">
                     {/* Logo */}
                     <div className="flex items-center gap-2">
-                        <div className="relative">
-                            <Hexagon
-                                size={32}
-                                className="text-purple-500"
-                                fill="rgba(147, 51, 234, 0.1)"
-                            />
-                            <Code2
-                                size={16}
-                                className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-purple-300"
-                            />
-                        </div>
-                        <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-purple-300 bg-clip-text text-transparent">
-                            HexReview
-                        </span>
+                        <Link href="/home"> {/* Wrap the logo in a Link */}
+                            <div className="relative cursor-pointer"> {/* Add cursor-pointer for better UX */}
+                                <Hexagon
+                                    size={32}
+                                    className="text-purple-500"
+                                    fill="rgba(147, 51, 234, 0.1)"
+                                />
+                                <Code2
+                                    size={16}
+                                    className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-purple-300"
+                                />
+                            </div>
+                        </Link>
+                        <Link href="/home">
+                            <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-purple-300 bg-clip-text text-transparent">
+                                HexReview
+                            </span>
+                        </Link>
                     </div>
 
                     {/* Profile Menu */}
@@ -68,7 +73,7 @@ export default function Header() {
                                         Settings
                                     </button>
                                     <button 
-                                        onClick = {handleLogout}
+                                        onClick={handleLogout}
                                         className="w-full flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-white/[0.05] rounded-lg transition-colors">
                                         <LogOut size={16} />
                                         Logout
@@ -80,5 +85,5 @@ export default function Header() {
                 </div>
             </div>
         </header>
-    )
+    );
 }

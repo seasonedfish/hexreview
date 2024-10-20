@@ -28,6 +28,7 @@
     "react": "^18.3.1",
     "react-dom": "^18",
     "react-dropzone": "^14.2.10",
+    "react-router-dom": "^6.27.0",
     "react-syntax-highlighter": "^15.6.1",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7"
