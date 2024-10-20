@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { ThemeProvider } from "@/components/ui/theme-provider";
+import dynamic from "next/dynamic";
+// https://github.com/pacocoursey/next-themes/issues/152#issuecomment-1833398041
+const ThemeProvider = dynamic(() => import("@/components/ui/theme-provider"), {ssr: false});
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,17 +27,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <ThemeProvider
-        attribute="class"
-        defaultTheme="dark"
-      >
+    <html lang="en" suppressHydrationWarning>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased h-screen text-gray-400`}
         >
-          {children}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="dark"
+          >
+            {children}
+          </ThemeProvider>
         </body>
-      </ThemeProvider>
     </html>
   );
 }
