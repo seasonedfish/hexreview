@@ -8,7 +8,6 @@ const RightCommentsSection = () => {
     {
       id: 1,
       author: "John Doe",
-      fileName: "button.tsx",
       lineNumber: 42,
       content:
         "We should consider adding aria-labels for better accessibility.",
@@ -17,7 +16,6 @@ const RightCommentsSection = () => {
     {
       id: 2,
       author: "Jane Smith",
-      fileName: "utils.ts",
       lineNumber: 15,
       content: "This utility function could be optimized further.",
       timestamp: "5 hours ago",
@@ -25,7 +23,6 @@ const RightCommentsSection = () => {
     {
       id: 3,
       author: "Mike Johnson",
-      fileName: "header.tsx",
       lineNumber: 23,
       content: "The responsive design breaks at smaller viewport sizes.",
       timestamp: "1 day ago",
@@ -33,7 +30,6 @@ const RightCommentsSection = () => {
     {
       id: 4,
       author: "Mike Johnson",
-      fileName: "header.tsx",
       lineNumber: 23,
       content: "The responsive design breaks at smaller viewport sizes.",
       timestamp: "1 day ago",
@@ -41,7 +37,6 @@ const RightCommentsSection = () => {
     {
       id: 5,
       author: "Mike Johnson",
-      fileName: "header.tsx",
       lineNumber: 23,
       content: "The responsive design breaks at smaller viewport sizes.",
       timestamp: "1 day ago",
@@ -49,7 +44,6 @@ const RightCommentsSection = () => {
     {
       id: 6,
       author: "Mike Johnson",
-      fileName: "header.tsx",
       lineNumber: 23,
       content: "The responsive design breaks at smaller viewport sizes.",
       timestamp: "1 day ago",
@@ -59,7 +53,7 @@ const RightCommentsSection = () => {
   return (
     <div className="w-full bg-gray-900 p-4">
       <h2 className="text-xl font-bold mb-4 text-white">Comments</h2>
-      <div className="overflow-y-auto" style={{ maxHeight: "615px" }}>
+      <div className="">
         <div className="space-y-4">
           {comments.map((comment) => (
             <Card key={comment.id} className="bg-gray-800 border-gray-700">
@@ -80,7 +74,7 @@ const RightCommentsSection = () => {
                       </span>
                     </div>
                     <div className="text-sm text-gray-400 mb-1">
-                      {comment.fileName} • Line {comment.lineNumber}
+                      Line {comment.lineNumber}
                     </div>
                     <p className="text-gray-200">{comment.content}</p>
                   </div>

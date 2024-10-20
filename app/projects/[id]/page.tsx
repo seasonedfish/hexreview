@@ -205,7 +205,7 @@ export function normalColors(ansi: Ansi): Array<RgbColor> {
             )
           }
         </div>
-        <div className="basis-1/4">
+        <div className="basis-1/4 h-full overflow-auto">
           <RightCommentsSection />
         </div>
       </main>
