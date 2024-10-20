@@ -7,7 +7,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { okaidia } from "react-syntax-highlighter/dist/esm/styles/prism";
 import BottomCommentsSection from "@/components/ui/BottomCommentsSection";
 import RightCommentsSection from "@/components/ui/RightCommentsSection";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { getLineNumbers, isInCode } from "@/lib/utils";
 
 export default function FileTreeDemo() {
@@ -48,35 +48,62 @@ export function normalColors(ansi: Ansi): Array<RgbColor> {
 	]
 }`;
 
+  const menuRef = useRef(null);
+
   const handleShare = () => {
     // You can implement sharing logic here
     alert("Sharing functionality coming soon!");
   };
 
   const [selection, setSelection] = useState({ begin: 0, end: 0 });
+  const [showMenu, setShowMenu] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
+
     const handleSelection = () => {
+      setShowMenu(false);
       const selection = window.getSelection();
-      if (selection == null || selection.rangeCount === 0) return;
+      if (selection == null || selection.rangeCount === 0 || selection.type === "Caret") return;
 
       if (!isInCode(selection.anchorNode) || !isInCode(selection.anchorNode)) {
         return;
       }
   
       const result = getLineNumbers(selection);
-
       if (!result) return;
-      console.log(result.begin, result.end);
-      setSelection({begin: result.begin, end: result.end});
+
+      setSelection({ begin: result.begin, end: result.end });
+      
+      // Get the bounding box of the selected range
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+    
+      // Set the position of the floating menu
+      setMenuPosition({ top: rect.bottom + window.scrollY, left: rect.left + window.scrollX + 300});
+    
+      setShowMenu(true);
+    };
+
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setShowMenu(false); // Hide the menu if click is outside
+      }
+    };
+    
+
+    const handleCommentSubmit = (comment) => {
+      console.log("Comment submitted:", comment, "for selection:", selection);
+      setShowMenu(false); // Hide the menu after submitting a comment
     };
   
     useEffect(() => {
-  
       // Add event listeners
-      document.addEventListener('selectionchange', handleSelection);
+      document.addEventListener('mouseup', handleSelection);
+      document.addEventListener('mousedown', handleClickOutside);
   
       // Cleanup
       return () => {
-        document.removeEventListener('selectionchange', handleSelection);
+        document.removeEventListener('mouseup', handleSelection);
+        document.removeEventListener('mousedown', handleClickOutside);
       };
     }, []);
 
@@ -151,6 +178,28 @@ export function normalColors(ansi: Ansi): Array<RgbColor> {
           >
             {codeString}
           </SyntaxHighlighter>
+          {
+            showMenu && (
+              <div
+                style={{
+                  position: 'absolute', 
+                  top: `${menuPosition.top}px`, 
+                  left: `${menuPosition.left}px`, 
+                  background: 'white', 
+                  border: '1px solid #ccc', 
+                  padding: '10px'
+                }}
+                ref={menuRef}
+              >
+                <textarea 
+                  placeholder="Enter your comment" 
+                  rows={3}
+                  style={{ width: '200px' }}
+                ></textarea>
+                <button onClick={() => handleCommentSubmit("User's comment here")}>Submit</button>
+              </div>
+            )
+          }
         </div>
         <div className="basis-1/4">
           <RightCommentsSection />
