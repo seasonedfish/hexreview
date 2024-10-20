@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { getAuth, GithubAuthProvider, signInWithPopup } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
-import { db } from "/Users/aldoestrada/hexreview/utils/firebase";
+import { db } from "@/utils/firebase";
 
 export default function GitHubAuthButton() {
   const [error, setError] = useState<string | null>(null);
