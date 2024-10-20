@@ -16,7 +16,7 @@ export default function Header() {
 
       if (response.ok) {
         // Redirect to the login page on successful logout
-        router.push('/login');
+        router.push('/');
       } else {
         console.error('Logout failed');
       }

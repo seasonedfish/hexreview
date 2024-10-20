@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect, ReactNode } from "react";
 import { Code2, MessageSquare, GitBranch, Hexagon, Github } from "lucide-react";
-import Link from "next/link";
 
 interface CodeSnippetProps {
   children: ReactNode;
