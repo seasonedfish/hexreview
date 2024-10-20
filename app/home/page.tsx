@@ -8,6 +8,7 @@ import { addFileToProject, createProject } from "@/utils/firestoreHelpers";
 import { getAuth } from "firebase/auth";
 import { getFirestore, collection, query, getDocs } from "firebase/firestore"; // Firestore imports
 import Link from "next/link";
+import { getLanguageFromFilename } from "../../lib/utils"; // Adjust the import path as needed
 
 export default function HomePage() {
   const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
