@@ -95,20 +95,21 @@ export const getRecentProjects = async (
 export const processZipFileStructure = async (
   userId: string,
   projectId: string,
-  zipContent: JSZip
+  zipContent: JSZip,
+  onProgress?: (progress: number) => void
 ) => {
   const processDirectory = async (
     dir: JSZip.JSZipObject,
     parentDirectoryId: string | null = null
   ) => {
-    const directoryName = dir.name.replace(/\/$/, ""); // Remove trailing slash if any
+    const directoryName = dir.name.replace(/\/$/, "");
     const directoryRef = await createDirectoryInProject(
       userId,
       projectId,
       directoryName,
       parentDirectoryId
     );
-    const directoryId = directoryRef.id; // The ID of the newly created directory
+    const directoryId = directoryRef.id;
 
     const dirFiles = Object.values(zipContent.files).filter(
       (file) => file.name.startsWith(directoryName) && !file.dir
@@ -116,24 +117,22 @@ export const processZipFileStructure = async (
 
     for (const zipEntry of dirFiles) {
       if (zipEntry.dir) {
-        // Recursively process subdirectories
         await processDirectory(zipEntry, directoryId);
       } else {
-        // Process file
-        const fileContent = await zipEntry.async("text"); // Extract file content as text
+        const fileContent = await zipEntry.async("text");
         const fileMetadata = {
-          fileName: zipEntry.name.replace(`${directoryName}/`, ""), // Remove directory prefix
+          fileName: zipEntry.name.replace(`${directoryName}/`, ""),
           fileType: zipEntry.name.split(".").pop() || "unknown",
-          fileSize: (await zipEntry.async("uint8array")).length, // Get the uncompressed size of the file
-          createdAt: new Date(), // You might want to get this from metadata if available
+          fileSize: (await zipEntry.async("uint8array")).length,
+          createdAt: new Date(),
           content: fileContent,
         };
         await addFileToDirectory(userId, projectId, directoryId, fileMetadata);
+        onProgress?.(1); // Call progress callback after each file is processed
       }
     }
   };
 
-  // Start processing from the root directory
   for (const zipEntry of Object.values(zipContent.files)) {
     if (zipEntry.dir) {
       await processDirectory(zipEntry);

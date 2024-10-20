@@ -12,9 +12,15 @@ import {
 } from "@/utils/firestoreHelpers";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Link from "next/link";
+import ProgressBar from "@/components/ui/ProgressBar";
 
 interface Project extends ProjectMetadata {
   id: string;
+}
+interface UploadStatus {
+  fileName: string;
+  progress: number;
+  isComplete: boolean;
 }
 
 export default function HomePage() {
@@ -23,6 +29,7 @@ export default function HomePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [recentProjects, setRecentProjects] = useState<Project[]>([]);
+  const [uploadStatus, setUploadStatus] = useState<UploadStatus | null>(null);
 
   // Authentication check and fetch initial data
   useEffect(() => {
@@ -54,7 +61,9 @@ export default function HomePage() {
 
     const now = new Date();
     const date = timestamp.toDate();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    const diffInHours = Math.floor(
+      (now.getTime() - date.getTime()) / (1000 * 60 * 60)
+    );
 
     if (diffInHours < 1) return "Just now";
     if (diffInHours < 24) return `${diffInHours} hours ago`;
@@ -109,29 +118,64 @@ export default function HomePage() {
     for (const file of acceptedFiles) {
       if (file.type === "application/zip" || file.name.endsWith(".zip")) {
         try {
-          const zip = new JSZip();
-          const zipContent = await zip.loadAsync(file);
+          setUploadStatus({
+            fileName: file.name,
+            progress: 0,
+            isComplete: false,
+          });
 
-          // Create project with detected language
+          const zip = new JSZip();
+          const zipContent = await zip.loadAsync(file, {
+            async: true,
+            onProgress: (metadata: { percent: any }) => {
+              const progress = (metadata.percent || 0) * 0.5; // First 50% for loading
+              setUploadStatus((prev) => ({
+                fileName: file.name,
+                progress: progress,
+                isComplete: false,
+              }));
+            },
+          });
+
           const language = detectProjectLanguage(zipContent.files);
+
+          // Create project
           const projectRef = await createProject(auth.currentUser.uid, {
             name: file.name.replace(".zip", ""),
             language,
           });
 
+          let processedFiles = 0;
+          const totalFiles = Object.keys(zipContent.files).length;
+
           // Process the ZIP file structure
           await processZipFileStructure(
             auth.currentUser.uid,
             projectRef.id,
-            zip
+            zipContent,
+            (progress: number) => {
+              processedFiles++;
+              const uploadProgress = 50 + (processedFiles / totalFiles) * 50; // Second 50% for processing
+              setUploadStatus((prev) => ({
+                fileName: file.name,
+                progress: uploadProgress,
+                isComplete: false,
+              }));
+            }
           );
+
+          setUploadStatus((prev) => ({
+            fileName: file.name,
+            progress: 100,
+            isComplete: true,
+          }));
 
           // Refresh the projects list
           await fetchUserProjects(auth.currentUser.uid);
 
-          alert(
-            `Successfully uploaded project "${file.name.replace(".zip", "")}"`
-          );
+          setTimeout(() => {
+            setUploadStatus(null);
+          }, 2000);
         } catch (error) {
           console.error("Error processing ZIP file:", error);
           alert("Failed to process ZIP file");
@@ -173,6 +217,15 @@ export default function HomePage() {
             </h3>
             <p className="text-gray-400">or click to browse</p>
           </div>
+          {uploadStatus && (
+            <div className="mt-6 flex justify-center">
+              <ProgressBar
+                progress={uploadStatus.progress}
+                isComplete={uploadStatus.isComplete}
+                fileName={uploadStatus.fileName}
+              />
+            </div>
+          )}
         </section>
 
         <section className="mb-12">
