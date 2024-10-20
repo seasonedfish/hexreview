@@ -19,8 +19,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Exchange the authorization code for an access token
     const response = await axios.post(GITHUB_TOKEN_URL, null, {
       params: {
-        client_id: process.env.GITHUB_CLIENT_ID,
-        client_secret: process.env.GITHUB_CLIENT_SECRET,
+        client_id: process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID,
+        client_secret: process.env.NEXT_PUBLIC_GITHUB_CLIENT_SECRET,
         code,
       },
       headers: {

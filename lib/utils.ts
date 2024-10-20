@@ -21,7 +21,8 @@ const languageMap: Record<string, string> = {
   ".rb": "ruby",
   ".go": "go",
   ".swift": "swift",
-  ".rs": "rust"
+  ".rs": "rust",
+  ".json": "json"
   // Add more extensions as needed based on the react-syntax-highlighter documentation
 };
 

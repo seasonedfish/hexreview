@@ -1,5 +1,6 @@
-"use client";
-
+"get client";
+import { Button } from "@/components/ui/button";
+import { Share2 } from "lucide-react";
 import Header from "@/components/header";
 import { File, Folder, Tree } from "@/components/ui/file-tree";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -23,36 +24,68 @@ export interface Ansi {
 	magenta: RgbColor;
 	cyan: RgbColor;
 	white: RgbColor;
+
+	brightBlack: RgbColor;
+	brightRed: RgbColor;
+	brightGreen: RgbColor;
+	brightYellow: RgbColor;
+	brightBlue: RgbColor;
+	brightMagenta: RgbColor;
+	brightCyan: RgbColor;
+	brightWhite: RgbColor;
 }
-      `;
 
-  const [selection, setSelection] = useState({ begin: 0, end: 0 });
-  const handleSelection = () => {
-    const selection = window.getSelection();
-    if (selection == null || selection.rangeCount === 0) return;
+export function normalColors(ansi: Ansi): Array<RgbColor> {
+	return [
+		ansi.black,
+		ansi.red,
+		ansi.green,
+		ansi.yellow,
+		ansi.blue,
+		ansi.magenta,
+		ansi.cyan,
+		ansi.white,
+	]
+}`;
 
-    const result = getLineNumbers(selection);
-    if (!result) return;
-    console.log(result.begin, result.end);
-    setSelection({begin: result.begin, end: result.end});
+  const handleShare = () => {
+    // You can implement sharing logic here
+    alert("Sharing functionality coming soon!");
   };
 
-  useEffect(() => {
-
-    // Add event listeners
-    document.addEventListener('selectionchange', handleSelection);
-
-    // Cleanup
-    return () => {
-      document.removeEventListener('selectionchange', handleSelection);
+  const [selection, setSelection] = useState({ begin: 0, end: 0 });
+    const handleSelection = () => {
+      const selection = window.getSelection();
+      if (selection == null || selection.rangeCount === 0) return;
+  
+      const result = getLineNumbers(selection);
+      if (!result) return;
+      console.log(result.begin, result.end);
+      setSelection({begin: result.begin, end: result.end});
     };
-  }, []);
-
-
+  
+    useEffect(() => {
+  
+      // Add event listeners
+      document.addEventListener('selectionchange', handleSelection);
+  
+      // Cleanup
+      return () => {
+        document.removeEventListener('selectionchange', handleSelection);
+      };
+    }, []);
 
   return (
     <div className="flex flex-col justify-items-stretch h-full bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
-      <Header></Header>
+      <div className="relative">
+        <Header />
+        <div className="absolute top-4 right-4">
+          <Button className="flex items-center gap-2 border-white bg-gray-900 text-white ">
+            <Share2 className="h-4 w-4" />
+            Share
+          </Button>
+        </div>
+      </div>
       <main className="flex-grow overflow-y-auto flex">
         <div className="relative basis-1/4 h-full flex w-1/2 flex-col items-center justify-center overflow-hidden rounded-lg border bg-background md:shadow-xl">
           <Tree
@@ -115,12 +148,11 @@ export interface Ansi {
           </SyntaxHighlighter>
         </div>
         <div className="basis-1/4">
-          <RightCommentsSection />{" "}
-          {/* Here is where the CommentsSection is rendered */}
+          <RightCommentsSection />
         </div>
       </main>
       <div>
-        <BottomCommentsSection />{" "}
+        <BottomCommentsSection />
       </div>
     </div>
   );
