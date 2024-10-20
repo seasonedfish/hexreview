@@ -12,41 +12,54 @@ import { getLineNumbers, isInCode } from "@/lib/utils";
 import { Card } from "@/components/ui/card";
 
 export default function FileTreeDemo() {
-  const codeString = `
-import toml from "toml";
-import { RgbColor, fromHex, toHex } from "./rgbcolor";
+  const codeString = `export function getLineNumbers(selection: Selection):
+  {begin: number, end: number} | undefined
+{
+  const beginElement = getTopLevelSpan(selection.getRangeAt(0));
+  const code = beginElement.parentElement;
+  if (!code) {
+    console.warn("Could not get code parent element");
+    return undefined;
+  }
 
-export interface Ansi {
-	black: RgbColor;
-	red: RgbColor;
-	green: RgbColor;
-	yellow: RgbColor;
-	blue: RgbColor;
-	magenta: RgbColor;
-	cyan: RgbColor;
-	white: RgbColor;
+  let lineNumber = 1;
+  let i = 0;
+  for (; i < code.children.length; i++) {
+    const currentChild = code.children[i];
 
-	brightBlack: RgbColor;
-	brightRed: RgbColor;
-	brightGreen: RgbColor;
-	brightYellow: RgbColor;
-	brightBlue: RgbColor;
-	brightMagenta: RgbColor;
-	brightCyan: RgbColor;
-	brightWhite: RgbColor;
-}
+    if (currentChild === beginElement) {
+      break;
+    }
+    if (currentChild.matches(".linenumber")) {
+      if (!currentChild.textContent) {
+        return undefined;
+      }
+      lineNumber = Number.parseInt(currentChild.textContent)
+    }
+  }
+  const begin = lineNumber;
 
-export function normalColors(ansi: Ansi): Array<RgbColor> {
-	return [
-		ansi.black,
-		ansi.red,
-		ansi.green,
-		ansi.yellow,
-		ansi.blue,
-		ansi.magenta,
-		ansi.cyan,
-		ansi.white,
-	]
+  const endElement = getTopLevelSpan(selection.getRangeAt(selection.rangeCount - 1));
+  if (!endElement) {
+    console.warn("Could not get end element");
+    return undefined;
+  }
+  for (; i < code.children.length; i++) {
+    const currentChild = code.children[i];
+
+    if (currentChild === endElement) {
+      break;
+    }
+    if (currentChild.matches(".linenumber")) {
+      if (!currentChild.textContent) {
+        return undefined;
+      }
+      lineNumber = Number.parseInt(currentChild.textContent)
+    }
+  }
+  const end = lineNumber;
+
+  return {begin: begin, end: end};
 }`;
 
   const menuRef = useRef(null);
@@ -124,7 +137,7 @@ export function normalColors(ansi: Ansi): Array<RgbColor> {
         <div className="relative basis-1/4 h-full flex w-1/2 flex-col items-center justify-center overflow-hidden rounded-lg border bg-background md:shadow-xl">
           <Tree
             className="p-2 overflow-hidden rounded-md bg-background h-full"
-            initialSelectedId="7"
+            initialSelectedId="11"
             initialExpandedItems={[
               "1",
               "2",
