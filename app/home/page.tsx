@@ -5,13 +5,11 @@ import Header from "@/components/header";
 import { useDropzone } from "react-dropzone";
 import JSZip from "jszip";
 import {
-  addFileToDirectory,
   createProject,
   processZipFileStructure,
+  addFileToProject,
 } from "@/utils/firestoreHelpers";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { addFileToProject, createProject } from "@/utils/firestoreHelpers";
-import { getAuth } from "firebase/auth";
 import { getFirestore, collection, query, getDocs } from "firebase/firestore"; // Firestore imports
 import Link from "next/link";
 
