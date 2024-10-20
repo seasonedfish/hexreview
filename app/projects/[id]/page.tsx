@@ -8,7 +8,7 @@ import { okaidia } from "react-syntax-highlighter/dist/esm/styles/prism";
 import BottomCommentsSection from "@/components/ui/BottomCommentsSection";
 import RightCommentsSection from "@/components/ui/RightCommentsSection";
 import { useEffect, useState } from "react";
-import { getLineNumbers } from "@/lib/utils";
+import { getLineNumbers, isInCode } from "@/lib/utils";
 
 export default function FileTreeDemo() {
   const codeString = `
@@ -57,8 +57,13 @@ export function normalColors(ansi: Ansi): Array<RgbColor> {
     const handleSelection = () => {
       const selection = window.getSelection();
       if (selection == null || selection.rangeCount === 0) return;
+
+      if (!isInCode(selection.anchorNode) || !isInCode(selection.anchorNode)) {
+        return;
+      }
   
       const result = getLineNumbers(selection);
+
       if (!result) return;
       console.log(result.begin, result.end);
       setSelection({begin: result.begin, end: result.end});

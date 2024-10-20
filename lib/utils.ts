@@ -36,6 +36,23 @@ export function getLanguageFromFilename(filename: string): string {
   return languageMap[extension] || 'plain'; // Return 'plain' if the extension is not recognized
 }
 
+export function isInCode(node: Node | null) {
+  if (!node) {
+    return false;
+  }
+
+  if (node.nodeName === "CODE") {
+    return true;
+  }
+  else if (node.parentElement?.nodeName === "CODE") {
+    return true;
+  }
+  else if (node.parentElement?.matches("code *")) {
+    return true;
+  }
+  return false;
+}
+
 export function getTopLevelSpan(range: Range) {
   if (range.startContainer.parentElement?.matches("code")) {
     return range.startContainer;
@@ -50,11 +67,6 @@ export function getTopLevelSpan(range: Range) {
 }
 
 export const getLineNumbers = function (selection: Selection): {begin: number, end: number} | undefined {
-  const mainCode = document.getElementById("main-code");
-  if (!mainCode?.matches(":hover")) {
-    return undefined;
-  }
-
   const beginElement = getTopLevelSpan(selection.getRangeAt(0));
   const code = beginElement.parentElement;
   if (!code) {
