@@ -1,44 +1,82 @@
 "use client";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useRef, useState, useEffect } from "react";
 import { User, File, Clock, Plus, MessageSquare } from "lucide-react";
 import Header from "@/components/header";
 import { useDropzone } from "react-dropzone";
 import JSZip from "jszip";
-import {
-  createProject,
-  processZipFileStructure,
-  addFileToProject,
-} from "@/utils/firestoreHelpers";
+import { addFileToDirectory, createProject, processZipFileStructure } from "@/utils/firestoreHelpers";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, collection, query, getDocs } from "firebase/firestore"; // Firestore imports
 import Link from "next/link";
 
 export default function HomePage() {
   const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
-  const [recentProjects, setRecentProjects] = useState<any[]>([]); // State for recent projects
-  const [pastAnnotations, setPastAnnotations] = useState<any[]>([]); // State for past annotations
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const db = getFirestore(); // Initialize Firestore
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // For handling loading state
 
-  // Function to fetch recent projects from Firestore
-  const fetchRecentProjects = async () => {
-    try {
-      const projectsQuery = query(collection(db, "projects")); // Adjust collection name as needed
-      const querySnapshot = await getDocs(projectsQuery);
-      const projects = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setRecentProjects(projects);
-    } catch (error) {
-      console.error("Error fetching recent projects: ", error);
-    }
-  };
-
-  // Fetch data on component mount
+  // Authentication check
   useEffect(() => {
-    fetchRecentProjects();
+    const auth = getAuth();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+      } else {
+        window.location.href = "/login"; // Redirect to login if not authenticated
+      }
+      setIsLoading(false); // Authentication check is done
+    });
+
+    return () => unsubscribe();
   }, []);
+
+  // Mock data for projects
+  const recentProjects = [
+    {
+      id: 1,
+      name: "Authentication Service",
+      language: "Python",
+      lastEdited: "2 hours ago",
+      annotations: 12,
+    },
+    {
+      id: 2,
+      name: "Frontend Components",
+      language: "React",
+      lastEdited: "1 day ago",
+      annotations: 8,
+    },
+    {
+      id: 3,
+      name: "API Integration",
+      language: "JavaScript",
+      lastEdited: "3 days ago",
+      annotations: 15,
+    },
+  ];
+
+  const pastAnnotations = [
+    {
+      id: 1,
+      name: "Database Schema",
+      language: "SQL",
+      annotatedAt: "1 week ago",
+      collaborators: 3,
+    },
+    {
+      id: 2,
+      name: "Auth Middleware",
+      language: "Node.js",
+      annotatedAt: "2 weeks ago",
+      collaborators: 2,
+    },
+    {
+      id: 3,
+      name: "UI Components",
+      language: "React",
+      annotatedAt: "3 weeks ago",
+      collaborators: 4,
+    },
+  ];
 
   // Function to handle file drop
   const onDrop = useCallback((acceptedFiles: File[]) => {
@@ -61,11 +99,12 @@ export default function HomePage() {
     }
   };
 
+  // Function to process the files
   const processFiles = async (acceptedFiles: File[]) => {
     for (const file of acceptedFiles) {
       if (file.type === "application/zip" || file.name.endsWith(".zip")) {
         try {
-          await handleZipFile(file); // Process the ZIP file
+          await handleZipFile(file);
         } catch (error) {
           alert(`Failed to process ZIP file: ${error}`);
         }
@@ -75,9 +114,10 @@ export default function HomePage() {
     }
   };
 
-  // Function to handle ZIP files and update recent projects
+  // Function to handle ZIP files
   const handleZipFile = async (file: File) => {
     const auth = getAuth(); // Get the current authenticated user
+
     if (!auth.currentUser) {
       console.error("No user is currently signed in");
       return;
@@ -88,67 +128,44 @@ export default function HomePage() {
     try {
       const zip = new JSZip();
       const zipContent = await zip.loadAsync(file);
-
-      const extractedFiles: Blob[] = [];
+      
       // Create a new project under the authenticated user's collection
-      const projectRef = await createProject(
-        userId,
-        file.name.replace(".zip", "")
-      );
+      const projectRef = await createProject(userId, file.name.replace(".zip", ""));
       const projectId = projectRef.id; // The ID of the newly created project
 
-      // Process the files inside the ZIP
-      for (const filename in zipContent.files) {
-        if (zipContent.files[filename].dir) {
-          continue; // Skip directories
-        }
+      // Process the ZIP file structure and store it in Firestore
+      await processZipFileStructure(userId, projectId, zip);
 
-        const zipEntry = zipContent.files[filename];
-        const fileData: Blob = await zipEntry.async("blob");
-
-        // Prepare metadata for the file
-        const fileMetadata = {
-          fileName: filename,
-          fileType: fileData.type || "application/octet-stream",
-          fileSize: fileData.size,
-          createdAt: new Date(),
-          content: await fileData.text(), // Store the content as text
-        };
-
-        // Add metadata (like fileName) separately when storing in Firestore
-        await addFileToProject(userId, projectId, fileMetadata);
-        extractedFiles.push(fileData);
-      }
-
-      // Update the recentProjects state with the new project
-      const newProject = {
-        id: projectId,
-        name: file.name.replace(".zip", ""), // Project name without .zip
-        language: "Unknown", // Default or determine based on files
-        lastEdited: "Just now",
-        annotations: extractedFiles.length, // Number of files
-      };
-
-      // Instead of replacing, add to the beginning of the array
-      setRecentProjects((prevProjects) => [newProject, ...prevProjects]);
-
-      alert(
-        `Successfully extracted ${extractedFiles.length} files and added them to Firestore.`
-      );
+      alert(`Successfully extracted and added the project "${file.name.replace(".zip", "")}" to Firestore.`);
     } catch (error) {
-      console.error(
-        "Error while extracting ZIP and storing in Firestore:",
-        error
-      );
-      throw new Error("Failed to extract ZIP and store files");
+      console.error("Error while extracting ZIP and storing in Firestore:", error);
+      alert("Failed to extract ZIP and store files.");
     }
   };
+
+  // If loading, show a loading spinner or message
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex justify-center items-center">
+        <p className="text-white">Loading...</p>
+      </div>
+    );
+  }
+
+  // If not authenticated, we would have already redirected the user
+  if (!isAuthenticated) {
+    return null; // Render nothing (the user is being redirected)
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
       <Header />
+
+      {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 py-8">
+        {/* Upload Section */}
         <section className="mb-12">
+          {/* Drag & Drop Zone */}
           <div
             {...getRootProps({ className: "dropzone" })}
             className={`
@@ -168,14 +185,15 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Recent Projects Grid */}
         <section className="mb-12">
-          <h2 className="text-2xl font-bold text-white mb-6">
-            Recent Projects
-          </h2>
+          <h2 className="text-2xl font-bold text-white mb-6">Recent Projects</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {recentProjects.map((project) => (
               <Link href={`/projects/${project.id}`} key={project.id}>
-                <div className="backdrop-blur-xl bg-white/[0.05] border border-white/[0.05] rounded-xl p-6 hover:bg-white/[0.08] transition-colors">
+                <div
+                  className="backdrop-blur-xl bg-white/[0.05] border border-white/[0.05] rounded-xl p-6 hover:bg-white/[0.08] transition-colors cursor-pointer"
+                >
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="text-lg font-medium text-white mb-1">
@@ -185,37 +203,32 @@ export default function HomePage() {
                         {project.language}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <MessageSquare size={20} className="text-purple-300" />
-                      <span className="text-sm text-gray-400">
-                        {project.annotations} files
-                      </span>
-                    </div>
+                    <span className="text-sm text-gray-400">
+                      {project.lastEdited}
+                    </span>
                   </div>
-                  <span className="text-sm text-gray-400">
-                    {project.lastEdited}
-                  </span>
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <MessageSquare size={16} />
+                    <span className="text-sm">
+                      {project.annotations} annotations
+                    </span>
+                  </div>
                 </div>
               </Link>
             ))}
           </div>
         </section>
 
+        {/* Past Annotations */}
         <section>
-          <h2 className="text-2xl font-bold text-white mb-6">
-            Past Annotations
-          </h2>
+          <h2 className="text-2xl font-bold text-white mb-6">Past Annotations</h2>
           <div className="backdrop-blur-xl bg-white/[0.05] border border-white/[0.05] rounded-xl">
             {pastAnnotations.map((annotation, index) => (
               <div
                 key={annotation.id}
                 className={`
                   flex items-center justify-between p-6
-                  ${
-                    index !== pastAnnotations.length - 1
-                      ? "border-b border-white/[0.05]"
-                      : ""
-                  }
+                  ${index !== pastAnnotations.length - 1 ? "border-b border-white/[0.05]" : ""}
                   hover:bg-white/[0.08] transition-colors
                 `}
               >
@@ -224,12 +237,8 @@ export default function HomePage() {
                     <File size={20} className="text-purple-300" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-medium text-white mb-1">
-                      {annotation.name}
-                    </h3>
-                    <span className="text-sm text-gray-400">
-                      {annotation.language}
-                    </span>
+                    <h3 className="text-lg font-medium text-white mb-1">{annotation.name}</h3>
+                    <span className="text-sm text-gray-400">{annotation.language}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-6">
