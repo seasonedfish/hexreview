@@ -125,17 +125,7 @@ export default function HomePage() {
           });
 
           const zip = new JSZip();
-          const zipContent = await zip.loadAsync(file, {
-            async: true,
-            onProgress: (metadata: { percent: any }) => {
-              const progress = (metadata.percent || 0) * 0.5; // First 50% for loading
-              setUploadStatus((prev) => ({
-                fileName: file.name,
-                progress: progress,
-                isComplete: false,
-              }));
-            },
-          });
+          const zipContent = await zip.loadAsync(file, {});
 
           const language = detectProjectLanguage(zipContent.files);
 

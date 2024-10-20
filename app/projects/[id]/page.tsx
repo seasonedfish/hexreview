@@ -84,14 +84,15 @@ export function normalColors(ansi: Ansi): Array<RgbColor> {
       setShowMenu(true);
     };
 
-    const handleClickOutside = (event) => {
+    const handleClickOutside = (event: Event) => {
+      // @ts-ignore: contains
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setShowMenu(false); // Hide the menu if click is outside
       }
     };
     
 
-    const handleCommentSubmit = (comment) => {
+    const handleCommentSubmit = (comment: string) => {
       console.log("Comment submitted:", comment, "for selection:", selection);
       setShowMenu(false); // Hide the menu after submitting a comment
     };
