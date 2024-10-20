@@ -130,13 +130,6 @@ export default function HomePage() {
     try {
       const zip = new JSZip();
       const zipContent = await zip.loadAsync(file);
-      
-      // Create a new project under the authenticated user's collection
-      const projectRef = await createProject(userId, file.name.replace(".zip", ""));
-      const projectId = projectRef.id; // The ID of the newly created project
-    try {
-      const zip = new JSZip();
-      const zipContent = await zip.loadAsync(file);
       const extractedFiles: Blob[] = [];
 
       // Create a new project under the authenticated user's collection
