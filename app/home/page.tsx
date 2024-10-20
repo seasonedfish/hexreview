@@ -6,7 +6,9 @@ import { useDropzone } from "react-dropzone";
 import JSZip from "jszip";
 import { addFileToDirectory, createProject, processZipFileStructure } from "@/utils/firestoreHelpers";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, collection, query, getDocs } from "firebase/firestore"; // Firestore imports
 import Link from "next/link";
+import { getLanguageFromFilename } from "../../lib/utils"; // Adjust the import path as needed
 
 export default function HomePage() {
   const [droppedFiles, setDroppedFiles] = useState<File[]>([]);
@@ -131,6 +133,17 @@ export default function HomePage() {
       
       // Create a new project under the authenticated user's collection
       const projectRef = await createProject(userId, file.name.replace(".zip", ""));
+      const projectId = projectRef.id; // The ID of the newly created project
+    try {
+      const zip = new JSZip();
+      const zipContent = await zip.loadAsync(file);
+      const extractedFiles: Blob[] = [];
+
+      // Create a new project under the authenticated user's collection
+      const projectRef = await createProject(
+        userId,
+        file.name.replace(".zip", "")
+      );
       const projectId = projectRef.id; // The ID of the newly created project
 
       // Process the ZIP file structure and store it in Firestore
