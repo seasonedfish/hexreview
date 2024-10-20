@@ -34,39 +34,69 @@ const comments = [
     content: "The responsive design breaks at smaller viewport sizes.",
     timestamp: "1 day ago",
   },
+  {
+    id: 4,
+    author: "Mike Johnson",
+    fileName: "header.tsx",
+    lineNumber: 23,
+    content: "The responsive design breaks at smaller viewport sizes.",
+    timestamp: "1 day ago",
+  },
+  {
+    id: 5,
+    author: "Mike Johnson",
+    fileName: "header.tsx",
+    lineNumber: 23,
+    content: "The responsive design breaks at smaller viewport sizes.",
+    timestamp: "1 day ago",
+  },
+  {
+    id: 6,
+    author: "Mike Johnson",
+    fileName: "header.tsx",
+    lineNumber: 23,
+    content: "The responsive design breaks at smaller viewport sizes.",
+    timestamp: "1 day ago",
+  },
 ];
 
 export function BottomCommentsSection() {
   return (
-    <Table>
-      <TableCaption>A list of recent code comments.</TableCaption>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="text-white border border-white">
-            Author
-          </TableHead>
-          <TableHead className="text-white border border-white">File</TableHead>
-          <TableHead className="text-white border border-white">Line</TableHead>
-          <TableHead className="text-white border border-white">
-            Comment
-          </TableHead>
-          <TableHead className="text-right text-white border border-white">
-            Timestamp
-          </TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {comments.map((comment) => (
-          <TableRow key={comment.id}>
-            <TableCell className="font-medium">{comment.author}</TableCell>
-            <TableCell>{comment.fileName}</TableCell>
-            <TableCell>{comment.lineNumber}</TableCell>
-            <TableCell>{comment.content}</TableCell>
-            <TableCell className="text-right">{comment.timestamp}</TableCell>
+    <div className="overflow-y-auto" style={{ maxHeight: "200px" }}>
+      <Table className="min-w-full">
+        <TableCaption>A list of recent code comments.</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-white border border-white">
+              Author
+            </TableHead>
+            <TableHead className="text-white border border-white">
+              File
+            </TableHead>
+            <TableHead className="text-white border border-white">
+              Line
+            </TableHead>
+            <TableHead className="text-white border border-white">
+              Comment
+            </TableHead>
+            <TableHead className="text-right text-white border border-white">
+              Timestamp
+            </TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {comments.map((comment) => (
+            <TableRow key={comment.id}>
+              <TableCell className="font-medium">{comment.author}</TableCell>
+              <TableCell>{comment.fileName}</TableCell>
+              <TableCell>{comment.lineNumber}</TableCell>
+              <TableCell>{comment.content}</TableCell>
+              <TableCell className="text-right">{comment.timestamp}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
 
