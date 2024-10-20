@@ -1,8 +1,30 @@
+"use client"; // Ensures the component is client-side
 import { ChevronDown, Code2, Hexagon, LogOut, Settings, User } from "lucide-react";
-import { useState } from "react";
+import { useState } from "react"; // Only keep necessary imports
+import { useRouter } from "next/navigation"; // Ensure useRouter is still imported
 
 export default function Header() {
-    const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      // Call the backend API to logout
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        // Redirect to the login page on successful logout
+        router.push('/login');
+      } else {
+        console.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('An error occurred during logout', error);
+    }
+  };
+
     return (
         <header className="border-b border-white/[0.05] backdrop-blur-xl bg-gray-900/50">
             <div className="max-w-7xl mx-auto px-4 py-4">
@@ -45,7 +67,9 @@ export default function Header() {
                                         <Settings size={16} />
                                         Settings
                                     </button>
-                                    <button className="w-full flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-white/[0.05] rounded-lg transition-colors">
+                                    <button 
+                                        onClick = {handleLogout}
+                                        className="w-full flex items-center gap-2 px-4 py-2 text-red-400 hover:bg-white/[0.05] rounded-lg transition-colors">
                                         <LogOut size={16} />
                                         Logout
                                     </button>
