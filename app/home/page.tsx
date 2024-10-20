@@ -3,6 +3,7 @@ import React, { useCallback } from "react";
 import { User, File, Clock, Plus, MessageSquare } from "lucide-react";
 import Header from "@/components/header";
 import { useDropzone } from "react-dropzone";
+import Link from "next/link";
 
 export default function HomePage() {
   // Mock data for projects
@@ -95,30 +96,31 @@ export default function HomePage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {recentProjects.map((project) => (
-              <div
-                key={project.id}
-                className="backdrop-blur-xl bg-white/[0.05] border border-white/[0.05] rounded-xl p-6 hover:bg-white/[0.08] transition-colors"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-medium text-white mb-1">
-                      {project.name}
-                    </h3>
+              <Link href={`/projects/${project.id}`} key={project.id}>
+                <div
+                  className="backdrop-blur-xl bg-white/[0.05] border border-white/[0.05] rounded-xl p-6 hover:bg-white/[0.08] transition-colors"
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div>
+                      <h3 className="text-lg font-medium text-white mb-1">
+                        {project.name}
+                      </h3>
+                      <span className="text-sm text-gray-400">
+                        {project.language}
+                      </span>
+                    </div>
                     <span className="text-sm text-gray-400">
-                      {project.language}
+                      {project.lastEdited}
                     </span>
                   </div>
-                  <span className="text-sm text-gray-400">
-                    {project.lastEdited}
-                  </span>
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <MessageSquare size={16} />
+                    <span className="text-sm">
+                      {project.annotations} annotations
+                    </span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-gray-400">
-                  <MessageSquare size={16} />
-                  <span className="text-sm">
-                    {project.annotations} annotations
-                  </span>
-                </div>
-              </div>
+              </Link>
             ))}
           </div>
         </section>
@@ -134,10 +136,9 @@ export default function HomePage() {
                 key={annotation.id}
                 className={`
                   flex items-center justify-between p-6
-                  ${
-                    index !== pastAnnotations.length - 1
-                      ? "border-b border-white/[0.05]"
-                      : ""
+                  ${index !== pastAnnotations.length - 1
+                    ? "border-b border-white/[0.05]"
+                    : ""
                   }
                   hover:bg-white/[0.08] transition-colors
                 `}
